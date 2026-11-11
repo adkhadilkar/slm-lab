@@ -33,8 +33,11 @@ jobs:
       # The runner already has the Android SDK; install the platform and build tools the app uses.
       - name: Install Android SDK packages
         run: |
-          yes | sdkmanager --licenses > /dev/null
-          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          SDK="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+          SDKM=$(find "$SDK/cmdline-tools" -type f -name sdkmanager -path '*/bin/*' | head -1)
+          echo "Using $SDKM"
+          yes | "$SDKM" --licenses > /dev/null
+          "$SDKM" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
       - run: chmod +x gradlew
       - name: Assemble debug APK
         run: ./gradlew :app:assembleDebug --stacktrace
