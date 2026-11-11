@@ -26,13 +26,15 @@ jobs:
         with:
           distribution: temurin
           java-version: "17"
-      - uses: android-actions/setup-android@v3
       # Chaquopy runs pip on the build machine, so it needs the same Python version as the app.
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Accept Android SDK licences
-        run: yes | sdkmanager --licenses > /dev/null || true
+      # The runner already has the Android SDK; install the platform and build tools the app uses.
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses > /dev/null
+          sdkmanager "platforms;android-35" "build-tools;35.0.0" "platform-tools"
       - run: chmod +x gradlew
       - name: Assemble debug APK
         run: ./gradlew :app:assembleDebug --stacktrace
