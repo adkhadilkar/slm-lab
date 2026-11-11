@@ -1,44 +1,36 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.slmlab.app.ui.lesson
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -54,10 +46,14 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.slmlab.app.data.AppContainer
 import com.slmlab.app.data.LessonKind
 import com.slmlab.app.data.LessonMeta
+import com.slmlab.app.ui.components.EmptyState
 import com.slmlab.app.ui.components.KindChip
 import com.slmlab.app.ui.components.MarkdownView
-
-private val CardShape = RoundedCornerShape(14.dp)
+import com.slmlab.app.ui.components.PopButton
+import com.slmlab.app.ui.components.PopCard
+import com.slmlab.app.ui.components.PopTag
+import com.slmlab.app.ui.components.PopTopBar
+import com.slmlab.app.ui.theme.LocalPop
 
 @Composable
 fun LessonScreen(
@@ -85,22 +81,10 @@ fun LessonScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = lesson?.title ?: "Lesson",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                        )
-                    }
-                },
+            PopTopBar(
+                title = lesson?.title ?: "Lesson",
+                overline = if (lesson == null) null else "Lesson · ${lesson.minutes} min",
+                onBack = onBack,
             )
         },
         bottomBar = {
@@ -123,19 +107,12 @@ fun LessonScreen(
                 CircularProgressIndicator()
             }
         } else if (lesson == null) {
-            Column(
-                modifier = Modifier.padding(padding).fillMaxSize().padding(16.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Text(
-                    text = state.error ?: "Could not load this lesson.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.height(12.dp))
-                Button(onClick = { vm.retry() }) { Text("Retry") }
-            }
+            EmptyState(
+                message = state.error ?: "Could not load this lesson.",
+                modifier = Modifier.padding(padding).fillMaxSize(),
+                actionLabel = "Retry",
+                onAction = { vm.retry() },
+            )
         } else {
             LessonBody(
                 modifier = Modifier.padding(padding),
@@ -160,88 +137,123 @@ private fun LessonBody(
     onToggle: (Int) -> Unit,
     onOpenLesson: (String) -> Unit,
 ) {
-    val muted = MaterialTheme.colorScheme.onSurfaceVariant
+    val pop = LocalPop.current
+    val scheme = MaterialTheme.colorScheme
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             KindChip(kind = lesson.kind)
-            Spacer(Modifier.width(12.dp))
-            Text(
-                text = "${lesson.minutes} min",
-                style = MaterialTheme.typography.labelLarge,
-                color = muted,
-            )
+            if (lesson.labAsset != null) {
+                Spacer(Modifier.width(8.dp))
+                PopTag(text = "HAS A LAB", fill = pop.yellow)
+            }
         }
 
         if (lesson.kind == LessonKind.GUIDED) {
             Spacer(Modifier.height(12.dp))
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = CardShape,
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                ),
-            ) {
+            PopCard(modifier = Modifier.fillMaxWidth(), fill = pop.orange, radius = 16.dp) {
                 Text(
                     text = "This lesson runs on Colab or a laptop. Copy the code blocks from here.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.padding(16.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = pop.onBlock,
                 )
             }
         }
 
         Spacer(Modifier.height(16.dp))
-        MarkdownView(markdown = markdown, modifier = Modifier.fillMaxWidth())
+        PopCard(modifier = Modifier.fillMaxWidth(), radius = 20.dp, contentPadding = PaddingValues(16.dp)) {
+            MarkdownView(markdown = markdown, modifier = Modifier.fillMaxWidth())
+        }
 
-        Spacer(Modifier.height(24.dp))
-        Text(
-            text = "Checklist",
-            style = MaterialTheme.typography.titleMedium,
-        )
-        Spacer(Modifier.height(4.dp))
-        lesson.checklist.forEachIndexed { index, item ->
+        Spacer(Modifier.height(20.dp))
+        PopCard(
+            modifier = Modifier.fillMaxWidth(),
+            fill = scheme.surface,
+            radius = 20.dp,
+            shadow = 5.dp,
+            contentPadding = PaddingValues(start = 6.dp, end = 14.dp, top = 12.dp, bottom = 8.dp),
+        ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 48.dp)
-                    .clickable { onToggle(index) },
+                modifier = Modifier.padding(start = 10.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                Checkbox(
-                    checked = index in checked,
-                    onCheckedChange = { onToggle(index) },
-                )
-                Spacer(Modifier.width(4.dp))
                 Text(
-                    text = item,
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = "Checklist",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = scheme.onSurface,
                     modifier = Modifier.weight(1f),
                 )
+                PopTag(
+                    text = "${checked.size} / ${lesson.checklist.size}",
+                    fill = if (checked.size == lesson.checklist.size) pop.green else pop.pink,
+                )
+            }
+            lesson.checklist.forEachIndexed { index, item ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 48.dp)
+                        .clickable { onToggle(index) },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Checkbox(
+                        checked = index in checked,
+                        onCheckedChange = { onToggle(index) },
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = pop.green,
+                            checkmarkColor = pop.onBlock,
+                            uncheckedColor = pop.ink,
+                        ),
+                    )
+                    Text(
+                        text = item,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = scheme.onSurface,
+                        modifier = Modifier.weight(1f).padding(vertical = 6.dp),
+                    )
+                }
             }
         }
 
         if (next != null) {
             Spacer(Modifier.height(16.dp))
-            TextButton(onClick = { onOpenLesson(next.id) }) {
-                Text(
-                    text = "Next: ${next.title}",
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(Modifier.width(6.dp))
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                )
+            PopCard(
+                modifier = Modifier.fillMaxWidth(),
+                radius = 16.dp,
+                onClick = { onOpenLesson(next.id) },
+                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+            ) {
+                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "NEXT LESSON",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = scheme.onSurfaceVariant,
+                        )
+                        Spacer(Modifier.height(2.dp))
+                        Text(
+                            text = next.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = scheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                        contentDescription = null,
+                        tint = scheme.onSurface,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
             }
         }
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
     }
 }
 
@@ -252,32 +264,31 @@ private fun LessonActions(
     onOpenLab: () -> Unit,
     onToggleComplete: () -> Unit,
 ) {
-    Column {
-        HorizontalDivider()
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            if (hasLab) {
-                Button(onClick = onOpenLab, modifier = Modifier.weight(1f)) {
-                    Text("Open lab")
-                }
-            }
-            OutlinedButton(onClick = onToggleComplete, modifier = Modifier.weight(1f)) {
-                if (completed) {
-                    Icon(
-                        imageVector = Icons.Filled.Check,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text("Completed")
-                } else {
-                    Text("Mark complete")
-                }
-            }
+    val pop = LocalPop.current
+    val scheme = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(scheme.background)
+            .navigationBarsPadding()
+            .padding(start = 16.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        if (hasLab) {
+            PopButton(
+                text = "Open lab",
+                onClick = onOpenLab,
+                icon = Icons.Filled.PlayArrow,
+                modifier = Modifier.weight(1f),
+            )
         }
+        PopButton(
+            text = if (completed) "Completed" else "Mark complete",
+            onClick = onToggleComplete,
+            icon = if (completed) Icons.Filled.Check else null,
+            fill = if (completed) pop.green else scheme.surface,
+            contentColor = if (completed) pop.onBlock else scheme.onSurface,
+            modifier = Modifier.weight(1f),
+        )
     }
 }

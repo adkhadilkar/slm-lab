@@ -5,43 +5,41 @@ package com.slmlab.app.ui.lab
 import android.content.ClipData
 import android.content.ClipboardManager
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -56,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -68,8 +67,13 @@ import com.slmlab.app.ui.components.CodeEditor
 import com.slmlab.app.ui.components.ConsolePane
 import com.slmlab.app.ui.components.EmptyState
 import com.slmlab.app.ui.components.LossChart
+import com.slmlab.app.ui.components.PopButton
+import com.slmlab.app.ui.components.PopIconButton
+import com.slmlab.app.ui.components.PopTopBar
 import com.slmlab.app.ui.components.SymbolBar
 import com.slmlab.app.ui.components.insertAtCursor
+import com.slmlab.app.ui.components.popBox
+import com.slmlab.app.ui.theme.LocalPop
 import kotlinx.coroutines.launch
 
 @Composable
@@ -89,6 +93,7 @@ fun LabScreen(lessonId: String, onBack: () -> Unit) {
     val imeVisible = WindowInsets.isImeVisible
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val pop = LocalPop.current
 
     var menuOpen by rememberSaveable { mutableStateOf(false) }
     var showResetDialog by rememberSaveable { mutableStateOf(false) }
@@ -117,38 +122,25 @@ fun LabScreen(lessonId: String, onBack: () -> Unit) {
     }
 
     Scaffold(
-        modifier = Modifier.imePadding(),
+        modifier = Modifier.windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Bottom)),
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = if (state.title.isEmpty()) "Lab" else "Lab: ${state.title}",
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        if (state.running) {
-                            showLeaveDialog = true
-                        } else {
-                            onBack()
-                        }
-                    }) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                        )
+            PopTopBar(
+                title = if (state.title.isEmpty()) "Lab" else state.title,
+                overline = "Lab · runs on this phone",
+                onBack = {
+                    if (state.running) {
+                        showLeaveDialog = true
+                    } else {
+                        onBack()
                     }
                 },
                 actions = {
                     Box {
-                        IconButton(onClick = { menuOpen = true }) {
-                            Icon(
-                                imageVector = Icons.Filled.MoreVert,
-                                contentDescription = "More actions",
-                            )
-                        }
+                        PopIconButton(
+                            icon = Icons.Filled.MoreVert,
+                            contentDescription = "More actions",
+                            onClick = { menuOpen = true },
+                        )
                         DropdownMenu(
                             expanded = menuOpen,
                             onDismissRequest = { menuOpen = false },
@@ -181,78 +173,62 @@ fun LabScreen(lessonId: String, onBack: () -> Unit) {
             )
         },
         bottomBar = {
-            Surface(color = MaterialTheme.colorScheme.surface) {
-                Column {
-                    val showSymbols = imeVisible &&
-                        state.tab == LabTab.CODE &&
-                        !state.running &&
-                        !state.loading &&
-                        state.error == null
-                    if (showSymbols) {
-                        SymbolBar(
-                            onInsert = { text -> vm.onCodeChange(state.code.insertAtCursor(text)) },
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.background)) {
+                val showSymbols = imeVisible &&
+                    state.tab == LabTab.CODE &&
+                    !state.running &&
+                    !state.loading &&
+                    state.error == null
+                if (showSymbols) {
+                    SymbolBar(
+                        onInsert = { text -> vm.onCodeChange(state.code.insertAtCursor(text)) },
+                    )
+                }
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    if (state.running) {
+                        PopButton(
+                            text = "Stop",
+                            onClick = { vm.stop() },
+                            icon = Icons.Filled.Stop,
+                            fill = pop.red,
+                            contentColor = pop.onBlock,
                         )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (state.running) {
-                            Button(
-                                onClick = { vm.stop() },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error,
-                                    contentColor = MaterialTheme.colorScheme.onError,
-                                ),
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Stop,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp),
-                                )
-                                Spacer(Modifier.width(6.dp))
-                                Text("Stop")
-                            }
-                        } else {
-                            Button(
-                                onClick = {
-                                    focusManager.clearFocus()
-                                    vm.run()
-                                },
-                                enabled = !state.loading && state.error == null,
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.PlayArrow,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(18.dp),
-                                )
-                                Spacer(Modifier.width(6.dp))
-                                Text("Run")
-                            }
-                        }
-                        Spacer(Modifier.width(12.dp))
-                        if (state.running) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(14.dp),
-                                strokeWidth = 2.dp,
-                            )
-                            Spacer(Modifier.width(8.dp))
-                        }
-                        Text(
-                            text = state.status,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (state.statusIsError) {
-                                MaterialTheme.colorScheme.error
-                            } else {
-                                MaterialTheme.colorScheme.onSurfaceVariant
+                    } else {
+                        PopButton(
+                            text = "Run",
+                            onClick = {
+                                focusManager.clearFocus()
+                                vm.run()
                             },
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f),
+                            icon = Icons.Filled.PlayArrow,
+                            enabled = !state.loading && state.error == null,
                         )
                     }
+                    Spacer(Modifier.width(12.dp))
+                    if (state.running) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(14.dp),
+                            strokeWidth = 2.dp,
+                        )
+                        Spacer(Modifier.width(8.dp))
+                    }
+                    Text(
+                        text = state.status,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = if (state.statusIsError) {
+                            MaterialTheme.colorScheme.error
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
                 }
             }
         },
@@ -275,16 +251,18 @@ fun LabScreen(lessonId: String, onBack: () -> Unit) {
             )
 
             else -> Column(modifier = Modifier.padding(padding).fillMaxSize()) {
-                PrimaryTabRow(selectedTabIndex = state.tab.ordinal) {
-                    LabTab.entries.forEach { tab ->
-                        Tab(
-                            selected = state.tab == tab,
-                            onClick = { vm.selectTab(tab) },
-                            text = { Text(tabLabel(tab, state.outputUnread)) },
-                        )
-                    }
-                }
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                LabTabs(
+                    selected = state.tab,
+                    outputUnread = state.outputUnread,
+                    onSelect = { vm.selectTab(it) },
+                )
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 4.dp)
+                        .popBox(fill = MaterialTheme.colorScheme.surfaceVariant, ink = pop.ink, radius = 18.dp),
+                ) {
                     when (state.tab) {
                         LabTab.CODE -> CodeEditor(
                             value = state.code,
@@ -347,6 +325,42 @@ fun LabScreen(lessonId: String, onBack: () -> Unit) {
                 }
             },
         )
+    }
+}
+
+@Composable
+private fun LabTabs(selected: LabTab, outputUnread: Boolean, onSelect: (LabTab) -> Unit) {
+    val pop = LocalPop.current
+    val scheme = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .popBox(fill = scheme.surface, ink = pop.ink, radius = 16.dp)
+            .padding(5.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp),
+    ) {
+        LabTab.entries.forEach { tab ->
+            val isSelected = tab == selected
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp)
+                    .popBox(
+                        fill = if (isSelected) pop.yellow else scheme.surface,
+                        ink = if (isSelected) pop.ink else scheme.surface,
+                        radius = 11.dp,
+                    )
+                    .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(tab) }),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = tabLabel(tab, outputUnread),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = if (isSelected) pop.onBlock else scheme.onSurfaceVariant,
+                )
+            }
+        }
     }
 }
 

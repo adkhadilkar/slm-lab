@@ -18,7 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
+import com.slmlab.app.ui.theme.MonoFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.launch
@@ -70,7 +70,7 @@ fun ConsolePane(
                 Text(
                     text = text,
                     style = TextStyle(
-                        fontFamily = FontFamily.Monospace,
+                        fontFamily = MonoFamily,
                         fontSize = fontSizeSp.sp,
                         lineHeight = (fontSizeSp * 1.4f).sp,
                     ),

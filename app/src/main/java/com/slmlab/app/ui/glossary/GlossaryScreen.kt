@@ -5,6 +5,7 @@ package com.slmlab.app.ui.glossary
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,6 +37,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.slmlab.app.data.AppContainer
 import com.slmlab.app.data.GlossaryTerm
 import com.slmlab.app.ui.components.EmptyState
+import com.slmlab.app.ui.components.PopCard
+import com.slmlab.app.ui.components.PopTag
+import com.slmlab.app.ui.components.PopTopBar
+import com.slmlab.app.ui.theme.LocalPop
 
 @Composable
 fun GlossaryScreen() {
@@ -48,7 +52,7 @@ fun GlossaryScreen() {
     val state by vm.state.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Glossary") }) },
+        topBar = { PopTopBar(title = "Glossary", overline = "Words you will meet") },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
@@ -108,12 +112,9 @@ fun GlossaryScreen() {
                 ) {
                     state.groups.forEach { group ->
                         item(key = "letter-${group.letter}") {
-                            Text(
-                                text = group.letter.toString(),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.padding(top = 16.dp, bottom = 4.dp),
-                            )
+                            Row(modifier = Modifier.padding(top = 14.dp, bottom = 8.dp)) {
+                                PopTag(text = group.letter.toString(), fill = LocalPop.current.pink)
+                            }
                         }
                         items(group.terms) { term ->
                             TermRow(term)
@@ -130,12 +131,17 @@ fun GlossaryScreen() {
 
 @Composable
 private fun TermRow(term: GlossaryTerm) {
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
+    PopCard(
+        modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+        radius = 16.dp,
+        contentPadding = PaddingValues(horizontal = 14.dp, vertical = 12.dp),
+    ) {
         Text(
             text = term.term,
             style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurface,
         )
-        Spacer(Modifier.height(2.dp))
+        Spacer(Modifier.height(4.dp))
         Text(
             text = term.definition,
             style = MaterialTheme.typography.bodyMedium,

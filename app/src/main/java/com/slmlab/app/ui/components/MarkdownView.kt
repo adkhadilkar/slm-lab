@@ -40,7 +40,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.text.font.FontFamily
+import com.slmlab.app.ui.theme.MonoFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -176,7 +176,7 @@ private fun CodeBlock(code: String) {
         Text(
             text = code,
             style = TextStyle(
-                fontFamily = FontFamily.Monospace,
+                fontFamily = MonoFamily,
                 fontSize = 13.sp,
                 lineHeight = 19.sp,
             ),
@@ -245,7 +245,7 @@ private fun inlineText(text: String, codeBackground: Color): AnnotatedString = b
         } else if (text[i] == '`') {
             val end = text.indexOf('`', i + 1)
             if (end > i + 1) {
-                withStyle(SpanStyle(fontFamily = FontFamily.Monospace, background = codeBackground)) {
+                withStyle(SpanStyle(fontFamily = MonoFamily, background = codeBackground)) {
                     append(text.substring(i + 1, end))
                 }
                 i = end + 1

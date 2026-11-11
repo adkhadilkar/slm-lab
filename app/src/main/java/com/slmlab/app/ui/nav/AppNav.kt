@@ -1,33 +1,46 @@
 package com.slmlab.app.ui.nav
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.MenuBook
 import androidx.compose.material.icons.outlined.AutoAwesome
 import androidx.compose.material.icons.outlined.Route
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.slmlab.app.ui.components.popBox
 import com.slmlab.app.ui.glossary.GlossaryScreen
 import com.slmlab.app.ui.lab.LabScreen
 import com.slmlab.app.ui.lesson.LessonScreen
 import com.slmlab.app.ui.playground.PlaygroundScreen
 import com.slmlab.app.ui.roadmap.RoadmapScreen
 import com.slmlab.app.ui.settings.SettingsScreen
+import com.slmlab.app.ui.theme.LocalPop
 
 private const val ROUTE_ROADMAP = "roadmap"
 private const val ROUTE_PLAYGROUND = "playground"
@@ -60,22 +73,16 @@ fun AppNav() {
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         bottomBar = {
             if (onTab) {
-                NavigationBar {
-                    TabItem.entries.forEach { tab ->
-                        NavigationBarItem(
-                            selected = currentRoute == tab.route,
-                            onClick = {
-                                navController.navigate(tab.route) {
-                                    popUpTo(ROUTE_ROADMAP) { saveState = true }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            icon = { Icon(imageVector = tab.icon, contentDescription = tab.label) },
-                            label = { Text(tab.label) },
-                        )
-                    }
-                }
+                PopNavBar(
+                    currentRoute = currentRoute,
+                    onSelect = { tab ->
+                        navController.navigate(tab.route) {
+                            popUpTo(ROUTE_ROADMAP) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                )
             }
         },
     ) { innerPadding ->
@@ -128,6 +135,54 @@ fun AppNav() {
                 LabScreen(
                     lessonId = entry.arguments?.getString("id").orEmpty(),
                     onBack = { navController.popBackStack() },
+                )
+            }
+        }
+    }
+}
+
+/** Floating outlined tab bar with a hard shadow; the selected tab is a yellow block. */
+@Composable
+private fun PopNavBar(currentRoute: String?, onSelect: (TabItem) -> Unit) {
+    val pop = LocalPop.current
+    val scheme = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(scheme.background)
+            .navigationBarsPadding()
+            .padding(start = 16.dp, end = 11.dp, top = 6.dp, bottom = 7.dp)
+            .popBox(fill = scheme.surface, ink = pop.ink, radius = 20.dp, border = 2.5.dp, shadow = 5.dp)
+            .padding(6.dp),
+        horizontalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        TabItem.entries.forEach { tab ->
+            val selected = currentRoute == tab.route
+            val tint = if (selected) pop.onBlock else scheme.onSurfaceVariant
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(52.dp)
+                    .popBox(
+                        fill = if (selected) pop.yellow else scheme.surface,
+                        ink = if (selected) pop.ink else scheme.surface,
+                        radius = 13.dp,
+                    )
+                    .selectable(selected = selected, role = Role.Tab, onClick = { onSelect(tab) }),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    imageVector = tab.icon,
+                    contentDescription = null,
+                    tint = tint,
+                    modifier = Modifier.size(22.dp),
+                )
+                Text(
+                    text = tab.label,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = tint,
+                    maxLines = 1,
                 )
             }
         }

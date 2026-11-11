@@ -3,6 +3,7 @@
 package com.slmlab.app.ui.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +16,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -25,13 +25,11 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,6 +39,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.slmlab.app.data.AppContainer
 import com.slmlab.app.data.ThemeMode
+import com.slmlab.app.ui.components.PopButton
+import com.slmlab.app.ui.components.PopTag
+import com.slmlab.app.ui.components.PopTopBar
+import com.slmlab.app.ui.theme.LocalPop
+import com.slmlab.app.ui.theme.MonoFamily
 import kotlin.math.roundToInt
 
 @Composable
@@ -66,7 +69,7 @@ fun SettingsScreen() {
     }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Settings") }) },
+        topBar = { PopTopBar(title = "Settings") },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
     ) { padding ->
@@ -110,7 +113,7 @@ fun SettingsScreen() {
             )
             Text(
                 text = "for c in corpus: print(c)",
-                fontFamily = FontFamily.Monospace,
+                fontFamily = MonoFamily,
                 fontSize = state.editorFontSp.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -119,9 +122,12 @@ fun SettingsScreen() {
             )
 
             SectionLabel("Progress")
-            OutlinedButton(onClick = { vm.requestReset() }) {
-                Text("Reset progress")
-            }
+            PopButton(
+                text = "Reset progress",
+                onClick = { vm.requestReset() },
+                fill = LocalPop.current.red,
+                contentColor = LocalPop.current.onBlock,
+            )
             Spacer(Modifier.height(4.dp))
             Text(
                 text = "Clears completed lessons, checklist ticks, saved lab code and trained weights.",
@@ -176,10 +182,7 @@ fun SettingsScreen() {
 
 @Composable
 private fun SectionLabel(text: String) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 16.dp, bottom = 8.dp),
-    )
+    Row(modifier = Modifier.padding(top = 20.dp, bottom = 10.dp)) {
+        PopTag(text = text.uppercase(), fill = LocalPop.current.yellow)
+    }
 }

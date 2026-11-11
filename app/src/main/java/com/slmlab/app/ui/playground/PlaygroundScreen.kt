@@ -4,6 +4,7 @@ package com.slmlab.app.ui.playground
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -18,10 +19,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -30,12 +27,10 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -43,6 +38,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.slmlab.app.data.AppContainer
 import com.slmlab.app.ui.components.EmptyState
+import com.slmlab.app.ui.components.PopButton
+import com.slmlab.app.ui.components.PopCard
+import com.slmlab.app.ui.components.PopTopBar
+import com.slmlab.app.ui.theme.LocalPop
+import com.slmlab.app.ui.theme.MonoFamily
 import java.util.Locale
 import kotlin.math.roundToInt
 
@@ -57,7 +57,7 @@ fun PlaygroundScreen(onOpenLesson: (String) -> Unit) {
     val muted = MaterialTheme.colorScheme.onSurfaceVariant
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Playground") }) },
+        topBar = { PopTopBar(title = "Playground", overline = "Talk to the model you trained") },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
     ) { padding ->
         Column(
@@ -127,34 +127,22 @@ fun PlaygroundScreen(onOpenLesson: (String) -> Unit) {
 
             Spacer(Modifier.height(16.dp))
             if (state.generating) {
-                Button(
+                PopButton(
+                    text = "Stop",
                     onClick = { vm.stop() },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError,
-                    ),
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Stop,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text("Stop")
-                }
+                    icon = Icons.Filled.Stop,
+                    fill = LocalPop.current.red,
+                    contentColor = LocalPop.current.onBlock,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             } else {
-                Button(
+                PopButton(
+                    text = "Generate",
                     onClick = { vm.generate() },
+                    icon = Icons.Filled.PlayArrow,
                     enabled = !state.loading && !state.labRunning,
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.PlayArrow,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.width(6.dp))
-                    Text("Generate")
-                }
+                    modifier = Modifier.fillMaxWidth(),
+                )
                 if (state.labRunning) {
                     Spacer(Modifier.height(8.dp))
                     Text(
@@ -179,21 +167,24 @@ fun PlaygroundScreen(onOpenLesson: (String) -> Unit) {
                     onAction = { onOpenLesson("p1-05") },
                 )
             } else {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                        contentColor = MaterialTheme.colorScheme.onSurface,
-                    ),
+                PopCard(
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                    radius = 18.dp,
+                    shadow = 5.dp,
+                    contentPadding = PaddingValues(0.dp),
                 ) {
+                    Text(
+                        text = "OUTPUT",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = muted,
+                        modifier = Modifier.padding(start = 16.dp, top = 14.dp),
+                    )
                     Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
                         if (state.output.isNotEmpty()) {
                             Text(
                                 text = state.output,
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontFamily = FontFamily.Monospace,
+                                fontFamily = MonoFamily,
                             )
                         } else if (!state.generating) {
                             Text(

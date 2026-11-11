@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontFamily
+import com.slmlab.app.ui.theme.MonoFamily
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
@@ -46,7 +46,7 @@ fun CodeEditor(
 ) {
     val scheme = MaterialTheme.colorScheme
     val textStyle = TextStyle(
-        fontFamily = FontFamily.Monospace,
+        fontFamily = MonoFamily,
         fontSize = fontSizeSp.sp,
         lineHeight = (fontSizeSp * 1.4f).sp,
         color = scheme.onSurface,
@@ -148,7 +148,7 @@ fun SymbolBar(onInsert: (String) -> Unit, modifier: Modifier = Modifier) {
             ) {
                 Text(
                     text = key,
-                    style = TextStyle(fontFamily = FontFamily.Monospace, fontSize = 15.sp),
+                    style = TextStyle(fontFamily = MonoFamily, fontSize = 15.sp),
                     color = scheme.onSurface,
                 )
             }

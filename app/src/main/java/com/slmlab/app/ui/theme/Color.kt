@@ -1,42 +1,90 @@
 package com.slmlab.app.ui.theme
 
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-// Dark theme (default). Deep blue-black surfaces, one teal accent for things you can run or
-// have finished, and amber for anything that happens off the device (Colab, laptops).
-val DarkBackground = Color(0xFF0A0C12)
-val DarkSurface = Color(0xFF12151E)
-val DarkSurfaceVariant = Color(0xFF1A1E2A)
-val DarkOutline = Color(0xFF2A3040)
-val DarkOnBackground = Color(0xFFF1F4F9)
-val DarkMuted = Color(0xFF98A2B3)
-val DarkPrimary = Color(0xFF5EEAD4)
-val DarkOnPrimary = Color(0xFF042F2A)
-val DarkPrimaryContainer = Color(0xFF0F3B36)
-val DarkOnPrimaryContainer = Color(0xFFB8F7EA)
-val DarkSecondary = Color(0xFFFCD34D)
-val DarkOnSecondary = Color(0xFF3A2A00)
-val DarkSecondaryContainer = Color(0xFF3F3008)
-val DarkOnSecondaryContainer = Color(0xFFFDE9A6)
-val DarkTertiary = Color(0xFFA5B4FC)
-val DarkError = Color(0xFFFB7185)
-val DarkOnError = Color(0xFF3F0712)
+/**
+ * "Pop Paper" look: pale lavender paper, ink outlines, hard offset shadows and flat bright
+ * colour blocks. Text on a bright block is always [PopPalette.onBlock] (dark ink).
+ */
+data class PopPalette(
+    /** Outline and hard-shadow colour. */
+    val ink: Color,
+    /** Text and icons on a bright block (yellow, pink, green, orange). */
+    val onBlock: Color,
+    val yellow: Color,
+    val pink: Color,
+    val green: Color,
+    val orange: Color,
+    /** Strong block for the current item and primary actions; text on it is [onBlue]. */
+    val blue: Color,
+    val onBlue: Color,
+    /** Block for stop and destructive actions; text on it is [onBlock]. */
+    val red: Color,
+)
 
-// Light theme.
-val LightBackground = Color(0xFFF7F8FA)
+private val Ink = Color(0xFF14121F)
+
+val LightPop = PopPalette(
+    ink = Ink,
+    onBlock = Ink,
+    yellow = Color(0xFFFFD23F),
+    pink = Color(0xFFFF8FC7),
+    green = Color(0xFF7BE495),
+    orange = Color(0xFFFFB347),
+    blue = Color(0xFF3D5AFE),
+    onBlue = Color(0xFFFFFFFF),
+    red = Color(0xFFFF8A80),
+)
+
+val DarkPop = PopPalette(
+    ink = Color(0xFFF1EEFF),
+    onBlock = Ink,
+    yellow = Color(0xFFFFD23F),
+    pink = Color(0xFFFF8FC7),
+    green = Color(0xFF7BE495),
+    orange = Color(0xFFFFB347),
+    blue = Color(0xFF3D5AFE),
+    onBlue = Color(0xFFFFFFFF),
+    red = Color(0xFFFF8A80),
+)
+
+val LocalPop = staticCompositionLocalOf { LightPop }
+
+// Material roles, light.
+val LightBackground = Color(0xFFF1EEFF)
 val LightSurface = Color(0xFFFFFFFF)
-val LightSurfaceVariant = Color(0xFFEEF1F5)
-val LightOutline = Color(0xFFD9DEE7)
-val LightOnBackground = Color(0xFF111827)
-val LightMuted = Color(0xFF5B6475)
-val LightPrimary = Color(0xFF0F766E)
+val LightSurfaceVariant = Color(0xFFE7E2FA)
+val LightOutline = Ink
+val LightOnBackground = Ink
+val LightMuted = Color(0xFF55506B)
+val LightPrimary = Color(0xFF3D5AFE)
 val LightOnPrimary = Color(0xFFFFFFFF)
-val LightPrimaryContainer = Color(0xFFCCF5EE)
-val LightOnPrimaryContainer = Color(0xFF04322D)
-val LightSecondary = Color(0xFF92580A)
+val LightPrimaryContainer = Color(0xFFFFD23F)
+val LightOnPrimaryContainer = Ink
+val LightSecondary = Color(0xFFB4126C)
 val LightOnSecondary = Color(0xFFFFFFFF)
-val LightSecondaryContainer = Color(0xFFFEF0C7)
-val LightOnSecondaryContainer = Color(0xFF3D2600)
-val LightTertiary = Color(0xFF4338CA)
-val LightError = Color(0xFFBE123C)
+val LightSecondaryContainer = Color(0xFFFFB347)
+val LightOnSecondaryContainer = Ink
+val LightTertiary = Color(0xFF0B7A3B)
+val LightError = Color(0xFFC62828)
 val LightOnError = Color(0xFFFFFFFF)
+
+// Material roles, dark.
+val DarkBackground = Color(0xFF14121F)
+val DarkSurface = Color(0xFF1F1C2E)
+val DarkSurfaceVariant = Color(0xFF2A2640)
+val DarkOutline = Color(0xFFF1EEFF)
+val DarkOnBackground = Color(0xFFF1EEFF)
+val DarkMuted = Color(0xFFB9B3D6)
+val DarkPrimary = Color(0xFF9DB0FF)
+val DarkOnPrimary = Ink
+val DarkPrimaryContainer = Color(0xFFFFD23F)
+val DarkOnPrimaryContainer = Ink
+val DarkSecondary = Color(0xFFFF8FC7)
+val DarkOnSecondary = Ink
+val DarkSecondaryContainer = Color(0xFFFFB347)
+val DarkOnSecondaryContainer = Ink
+val DarkTertiary = Color(0xFF7BE495)
+val DarkError = Color(0xFFFF8A80)
+val DarkOnError = Ink

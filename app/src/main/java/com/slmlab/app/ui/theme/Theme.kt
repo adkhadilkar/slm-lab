@@ -7,6 +7,7 @@ import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -98,10 +99,12 @@ fun SlmLabTheme(themeMode: ThemeMode, content: @Composable () -> Unit) {
         }
     }
 
-    MaterialTheme(
-        colorScheme = if (dark) DarkScheme else LightScheme,
-        typography = SlmTypography,
-        shapes = SlmShapes,
-        content = content,
-    )
+    CompositionLocalProvider(LocalPop provides if (dark) DarkPop else LightPop) {
+        MaterialTheme(
+            colorScheme = if (dark) DarkScheme else LightScheme,
+            typography = SlmTypography,
+            shapes = SlmShapes,
+            content = content,
+        )
+    }
 }
