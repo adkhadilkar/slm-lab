@@ -14,13 +14,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.slmlab.app.data.ThemeMode
 
-/** Corner radii from DESIGN.md 7.3: chips 8dp, buttons 12dp, cards 14dp. */
+/** Softer, more generous corners than the first pass: chips 10dp, buttons 14dp, cards 18dp. */
 private val SlmShapes = Shapes(
     extraSmall = RoundedCornerShape(8.dp),
-    small = RoundedCornerShape(8.dp),
-    medium = RoundedCornerShape(12.dp),
-    large = RoundedCornerShape(14.dp),
-    extraLarge = RoundedCornerShape(14.dp),
+    small = RoundedCornerShape(10.dp),
+    medium = RoundedCornerShape(14.dp),
+    large = RoundedCornerShape(18.dp),
+    extraLarge = RoundedCornerShape(24.dp),
 )
 
 private val DarkScheme = darkColorScheme(
