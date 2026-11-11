@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A mint "{ . }" mark inside the adaptive icon safe zone (about 66dp of 108dp). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M46,34 H42 Q38,34 38,38 V50 Q38,54 34,54 Q38,54 38,58 V70 Q38,74 42,74 H46"
+        android:strokeColor="#7CE0C3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="5" />
+
+    <path
+        android:fillColor="@android:color/transparent"
+        android:pathData="M62,34 H66 Q70,34 70,38 V50 Q70,54 74,54 Q70,54 70,58 V70 Q70,74 66,74 H62"
+        android:strokeColor="#7CE0C3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:strokeWidth="5" />
+
+    <path
+        android:fillColor="#7CE0C3"
+        android:pathData="M51,54 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0 Z" />
+</vector>

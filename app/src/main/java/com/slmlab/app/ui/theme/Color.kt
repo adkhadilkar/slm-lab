@@ -1,0 +1,41 @@
+package com.slmlab.app.ui.theme
+
+import androidx.compose.ui.graphics.Color
+
+// Dark theme (default), DESIGN.md 7.1
+val DarkBackground = Color(0xFF0F1115)
+val DarkSurface = Color(0xFF171A21)
+val DarkSurfaceVariant = Color(0xFF1F2430)
+val DarkOutline = Color(0xFF2C3340)
+val DarkOnBackground = Color(0xFFE6E9EF)
+val DarkMuted = Color(0xFF9AA3B2)
+val DarkPrimary = Color(0xFF7CE0C3)
+val DarkOnPrimary = Color(0xFF06241C)
+val DarkPrimaryContainer = Color(0xFF12382F)
+val DarkOnPrimaryContainer = Color(0xFFA6F0DA)
+val DarkSecondary = Color(0xFFFFB86B)
+val DarkOnSecondary = Color(0xFF2E1A00)
+val DarkSecondaryContainer = Color(0xFF3D2A10)
+val DarkOnSecondaryContainer = Color(0xFFFFD9A8)
+val DarkTertiary = Color(0xFF9DB7FF)
+val DarkError = Color(0xFFFF6B6B)
+val DarkOnError = Color(0xFF2B0707)
+
+// Light theme, DESIGN.md 7.1
+val LightBackground = Color(0xFFFAFAF7)
+val LightSurface = Color(0xFFFFFFFF)
+val LightSurfaceVariant = Color(0xFFEEF0EC)
+val LightOutline = Color(0xFFD5D9DE)
+val LightOnBackground = Color(0xFF1B1F27)
+val LightMuted = Color(0xFF5B6472)
+val LightPrimary = Color(0xFF0E7C66)
+val LightOnPrimary = Color(0xFFFFFFFF)
+val LightPrimaryContainer = Color(0xFFCFF3E8)
+val LightOnPrimaryContainer = Color(0xFF06382D)
+val LightSecondary = Color(0xFF9A5200)
+val LightOnSecondary = Color(0xFFFFFFFF)
+val LightSecondaryContainer = Color(0xFFFFE3C2)
+val LightOnSecondaryContainer = Color(0xFF3A2000)
+val LightTertiary = Color(0xFF3454B4)
+val LightError = Color(0xFFB3261E)
+val LightOnError = Color(0xFFFFFFFF)

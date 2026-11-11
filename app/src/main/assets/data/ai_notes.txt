@@ -1,0 +1,46 @@
+A language model assigns a probability to the next token given all the tokens before it.
+Text is split into tokens, which are pieces such as whole words, parts of words, or single characters.
+Byte pair encoding starts from single characters and repeatedly merges the most frequent adjacent pair into a new token.
+A larger vocabulary usually means fewer tokens per sentence, but it also means a bigger output layer to compute.
+An embedding is a learned vector that stands for a token, so that the model can work with meaning as numbers.
+Position embeddings tell the model where each token sits in the sequence, because attention alone does not know the order.
+Self-attention lets each token look at earlier tokens and mix in the information it finds useful.
+A causal mask stops a token from looking at tokens that come after it, which keeps training honest.
+The attention weights for each token are non-negative numbers that add up to one.
+Multiple heads let a model attend to different kinds of relationships in parallel.
+The context window is the maximum number of tokens the model can read at once; anything beyond it is invisible.
+Training minimises the cross-entropy loss, which is the average surprise the model feels at each true next token.
+Cross-entropy of a uniform guess over a vocabulary of size V equals the natural log of V, which makes a useful baseline.
+A model is usually trained on a training split and checked on a validation split it never learned from.
+Gradient descent nudges every weight a small step against its gradient, the direction that most reduces the loss.
+Overfitting shows up as training loss falling while validation loss rises.
+Sampling picks the next token at random according to the model's probabilities instead of always taking the top one.
+Temperature rescales the scores before the softmax; low temperature sharpens the distribution and high temperature flattens it.
+Top-k sampling keeps only the k most likely tokens and renormalises them before drawing.
+Greedy decoding always takes the most likely token, which is deterministic but often repetitive.
+Retrieval augmented generation fetches relevant passages from an outside store and places them in the prompt before the model answers.
+Retrieval lets a model use facts from documents it was never trained on, without changing any of its weights.
+Documents are usually split into chunks so that each chunk is small enough to fit in the context window beside the question.
+Passages can be ranked by how many of their words overlap with the question, adjusted for how common each word is.
+TF-IDF weights a word by its frequency in one text times how rare that word is across all texts.
+Cosine similarity compares two vectors by the angle between them and ignores their length.
+Dense embeddings from a neural encoder can match passages that share a meaning but no exact words with the question.
+A good retrieval step matters more than a clever prompt when the answer is not stored in the model's weights.
+Hallucination is fluent text that is not supported by any source the model had access to.
+Grounding an answer means pointing to the passages it relies on, so that a reader can check them.
+Fine-tuning continues training a pretrained model on a smaller dataset for one specific task.
+Full fine-tuning updates every weight, which needs memory for the gradients and optimizer state of all of them.
+Parameter efficient methods freeze the pretrained weights and train only a small number of new parameters.
+LoRA adds a low-rank update to a frozen weight matrix, written as the product of two thin matrices.
+The second matrix in LoRA starts at zero, so the model begins exactly where the pretrained model was.
+The rank of a LoRA adapter sets how many independent directions of change it can express; higher rank means more capacity and more parameters.
+Quantization stores weights with fewer bits, trading a small loss of precision for a much smaller file.
+A symmetric quantizer uses one scale for a whole tensor and maps values to integers centred on zero.
+Lower bit widths shrink memory but increase rounding error, so quality usually drops first at the lowest precision.
+Evaluation needs a fixed set of questions with known good answers, and the same set must be used for every model compared.
+Perplexity is the exponential of the average cross-entropy, and it reads as how many choices the model is torn between.
+Prompt design sets the instructions and examples the model sees, and it changes the output without changing the weights.
+Few-shot prompting places a handful of worked examples before the real question so the model copies their format.
+Stop sequences tell the decoder when to end a reply, so the model does not keep writing past the answer.
+A learning rate that is too large makes the loss jump up and down, while one that is too small makes training crawl.
+Batch size trades memory for smoother gradient estimates.

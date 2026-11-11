@@ -1,0 +1,238 @@
+{
+  "phases": [
+    {
+      "id": "phase-1",
+      "title": "Build a tiny GPT",
+      "subtitle": "Understand the model by writing one",
+      "weeks": "Weeks 1–2",
+      "lessons": [
+        {
+          "id": "p1-01",
+          "title": "What a language model does",
+          "summary": "A language model gives a probability to each possible next character.",
+          "minutes": 15,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p1-01.md",
+          "lab": "labs/lab01_bigram.py",
+          "checklist": [
+            "I can explain what a next-token probability distribution is",
+            "I can explain why a uniform model scores ln(vocab)",
+            "I can compute the average negative log-likelihood of a short string",
+            "I ran lab 1 and compared the bigram loss with the uniform baseline"
+          ]
+        },
+        {
+          "id": "p1-02",
+          "title": "Tokens and BPE",
+          "summary": "Byte-pair encoding builds a vocabulary by merging frequent adjacent pairs.",
+          "minutes": 15,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p1-02.md",
+          "lab": "labs/lab02_tokenizer.py",
+          "checklist": [
+            "I can explain why models use subword tokens instead of characters or words",
+            "I can describe one BPE merge step on a short string",
+            "I can explain why encoding applies merges in the order they were learned",
+            "I ran lab 2 and checked that decode of encode returns the original text"
+          ]
+        },
+        {
+          "id": "p1-03",
+          "title": "Self-attention",
+          "summary": "Each token takes a weighted mix of earlier tokens using queries and keys.",
+          "minutes": 20,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p1-03.md",
+          "lab": "labs/lab03_attention.py",
+          "checklist": [
+            "I can say what Q, K and V are and where each one comes from",
+            "I can explain why scores are divided by the square root of d_head",
+            "I can explain what the causal mask does before the softmax",
+            "I ran lab 3 and read the attention heat map"
+          ]
+        },
+        {
+          "id": "p1-04",
+          "title": "The transformer block",
+          "summary": "Attention and an MLP, each with a LayerNorm and a residual connection.",
+          "minutes": 15,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p1-04.md",
+          "lab": null,
+          "checklist": [
+            "I can draw the order of operations in one pre-norm block",
+            "I can explain why residual connections help gradients reach early layers",
+            "I can compute a LayerNorm of a three-number vector by hand",
+            "I can name the parts of the model from the embedding to the logits"
+          ]
+        },
+        {
+          "id": "p1-05",
+          "title": "Training a tiny GPT",
+          "summary": "Train with cross-entropy and Adam, then read the train and validation curves.",
+          "minutes": 20,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p1-05.md",
+          "lab": "labs/lab04_train_gpt.py",
+          "checklist": [
+            "I can explain cross-entropy as the average negative log-likelihood of the targets",
+            "I can explain what backpropagation computes and what Adam does with it",
+            "I can tell overfitting apart from learning using the two loss curves",
+            "I ran lab 4 and saved a trained model"
+          ]
+        },
+        {
+          "id": "p1-06",
+          "title": "Sampling: temperature and top-k",
+          "summary": "Temperature and top-k reshape the next-token distribution before sampling.",
+          "minutes": 10,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p1-06.md",
+          "lab": "labs/lab05_sampling.py",
+          "checklist": [
+            "I can compute softmax of logits divided by a temperature",
+            "I can explain what top-k does and why top-k 1 is greedy",
+            "I can predict how a low or high temperature changes the output",
+            "I ran lab 5 and compared samples at several settings"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase-2",
+      "title": "Make a small model useful",
+      "subtitle": "Retrieval and evaluation before training",
+      "weeks": "Weeks 3–4",
+      "lessons": [
+        {
+          "id": "p2-01",
+          "title": "Choosing a pretrained small model",
+          "summary": "Pick a small model by size, licence, context length and memory budget.",
+          "minutes": 15,
+          "kind": "GUIDED",
+          "content": "lessons/p2-01.md",
+          "lab": null,
+          "checklist": [
+            "I can estimate memory for a model from its parameter count and precision",
+            "I can explain the difference between a base model and an instruct model",
+            "I can check a model's licence before I build on it",
+            "I loaded a small model in Colab or on a laptop and got a reply"
+          ]
+        },
+        {
+          "id": "p2-02",
+          "title": "Retrieval from first principles",
+          "summary": "Rank notes by TF-IDF cosine similarity and paste the best ones into a prompt.",
+          "minutes": 15,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p2-02.md",
+          "lab": "labs/lab06_rag.py",
+          "checklist": [
+            "I can explain why common words get a low TF-IDF weight",
+            "I can compute cosine similarity between two small vectors by hand",
+            "I can describe the chunk, rank and assemble steps of RAG",
+            "I ran lab 6 and checked that the top note is relevant to the question"
+          ]
+        },
+        {
+          "id": "p2-03",
+          "title": "A real RAG pipeline",
+          "summary": "Chunk, embed and retrieve your own documents, then generate a grounded answer.",
+          "minutes": 20,
+          "kind": "GUIDED",
+          "content": "lessons/p2-03.md",
+          "lab": null,
+          "checklist": [
+            "I can explain the trade-off between chunk size and chunk overlap",
+            "I can explain why normalized vectors make a dot product a cosine similarity",
+            "I ran retrieval over my own documents and read the top chunks",
+            "I built a prompt that asks the model to answer only from the context"
+          ]
+        },
+        {
+          "id": "p2-04",
+          "title": "Building an evaluation set",
+          "summary": "Write held-out questions with reference answers and score every change the same way.",
+          "minutes": 15,
+          "kind": "GUIDED",
+          "content": "lessons/p2-04.md",
+          "lab": null,
+          "checklist": [
+            "I can explain why eval questions must stay out of training data",
+            "I can choose between exact match and graded scoring for a question",
+            "I wrote 20 question and answer pairs for my own use case",
+            "I ran the scoring script and read every mismatch"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase-3",
+      "title": "Adapt and ship",
+      "subtitle": "Fine-tune, shrink and deploy",
+      "weeks": "Weeks 5–6",
+      "lessons": [
+        {
+          "id": "p3-01",
+          "title": "LoRA: low-rank adapters",
+          "summary": "Freeze a weight matrix and train a low-rank update B times A next to it.",
+          "minutes": 15,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p3-01.md",
+          "lab": "labs/lab07_lora.py",
+          "checklist": [
+            "I can state W + B·A and the shape of A and B for rank r",
+            "I can compute the trainable parameter count for full and LoRA updates",
+            "I can explain why B starts at zero",
+            "I ran lab 7 and compared the full and LoRA parameter counts"
+          ]
+        },
+        {
+          "id": "p3-02",
+          "title": "QLoRA fine-tuning",
+          "summary": "Fine-tune LoRA adapters on a 4-bit frozen base model on a Colab GPU.",
+          "minutes": 20,
+          "kind": "GUIDED",
+          "content": "lessons/p3-02.md",
+          "lab": null,
+          "checklist": [
+            "I can explain what the 4-bit base and the LoRA adapters each store",
+            "I can explain why only the adapters receive gradient updates",
+            "I can find the layer names to target by printing the model",
+            "I ran a short fine-tune and saved the adapter weights"
+          ]
+        },
+        {
+          "id": "p3-03",
+          "title": "Quantization",
+          "summary": "Map float weights to 8-bit and 4-bit integers with a scale and measure the loss.",
+          "minutes": 15,
+          "kind": "ON_DEVICE",
+          "content": "lessons/p3-03.md",
+          "lab": "labs/lab08_quantize.py",
+          "checklist": [
+            "I can compute a symmetric scale and quantize one weight by hand",
+            "I can explain the size and accuracy trade-off from float32 to int4",
+            "I can explain why one large outlier hurts a per-tensor scale",
+            "I ran lab 8 and compared the validation loss at each precision"
+          ]
+        },
+        {
+          "id": "p3-04",
+          "title": "Running a model on your phone",
+          "summary": "Convert a quantized model to one file and run it with an on-device runtime.",
+          "minutes": 15,
+          "kind": "GUIDED",
+          "content": "lessons/p3-04.md",
+          "lab": null,
+          "checklist": [
+            "I can estimate a model file's size from parameter count and bits per weight",
+            "I can explain why a quantized single file suits a phone",
+            "I converted and quantized a small model to a single file",
+            "I ran a prompt through the model in an on-device runtime"
+          ]
+        }
+      ]
+    }
+  ]
+}

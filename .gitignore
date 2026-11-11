@@ -1,0 +1,27 @@
+# Gradle and build output
+.gradle/
+build/
+app/build/
+.cxx/
+captures/
+.externalNativeBuild/
+
+# Local machine settings
+local.properties
+
+# IDE
+.idea/
+*.iml
+.DS_Store
+
+# Python caches (embedded Python and desktop tests)
+__pycache__/
+*.pyc
+.pytest_cache/
+build/
+.gradle/
+.idea/
+*.iml
+local.properties
+__pycache__/
+.pytest_cache/
